@@ -5,10 +5,20 @@ import * as url from 'url';
 const port = 5000;
 
 /* Global variables */
-let listingData, server;
+let listingData;
 
 const requestHandler = (request, response) => {
     const parsedUrl = url.parse(request.url);
+
+    if (request.method == 'GET' && parsedUrl.path == '/listings') {
+        response.writeHead(200, 'Content-Type', 'application/json')
+        response.end(listingData)
+    }
+    else 
+    {
+      response.writeHead(404, 'Content-Type', 'application/json')
+      response.end('Bad gateway error')
+    }
 
     /*
       Your request handler should send listingData in the JSON format as a response if a GET request
@@ -28,7 +38,10 @@ const requestHandler = (request, response) => {
      */
 };
 
+
+
 fs.readFile('listings.json', 'utf8', (err, data) => {
+    listingData = data
     /*
       This callback function should save the data in the listingData variable,
       then start the server.
@@ -44,9 +57,10 @@ fs.readFile('listings.json', 'utf8', (err, data) => {
 
     // Save the sate in the listingData variable already defined
 
+    const server = http.createServer(requestHandler);
 
-    // Creates the server
-
-    // Start the server
+    server.listen(port, () => {
+      console.log(`Server listening on: http://127.0.0.1:${port}`);
+    });
 
 });
